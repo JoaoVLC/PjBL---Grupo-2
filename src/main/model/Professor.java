@@ -8,6 +8,6 @@ public class Professor extends Usuario {
 
     @Override
     public int calcularPrazoDevolucao() {
-        return 14; // 14 dias para professor
+        return 30; // 30 dias para professor
     }
 }
