@@ -3,37 +3,36 @@ package main.service;
 import main.model.*;
 import main.exception.BibliotecaException;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class BibliotecaService {
-    private List<Usuario> usuarios = new ArrayList<>();
-    private List<Livro> livros = new ArrayList<>();
-    private List<Emprestimo> emprestimos = new ArrayList<>();
 
-    public void cadastrarUsuario(Usuario u) { usuarios.add(u); }
-    public void cadastrarLivro(Livro l) { livros.add(l); }
-    public void cadastrarAutor(Autor a) { /* salvar autor em lista ou arquivo */ }
+    private ArrayList<Usuario> usuarios = new ArrayList<>();
+    private ArrayList<Livro> livros = new ArrayList<>();
+    private ArrayList<Emprestimo> emprestimos = new ArrayList<>();
+
+    public void cadastrarAutor(Autor a) {
+        // implementa depois
+    }
+
+    public void cadastrarLivro(Livro l) {
+        livros.add(l);
+    }
+
+    public void cadastrarUsuario(Usuario u) {
+        usuarios.add(u);
+    }
 
     public void realizarEmprestimo(Usuario u, Livro l) throws BibliotecaException {
-        if (u.getMulta() > 0) throw new BibliotecaException("Usuário possui multa pendente!");
-        if (!l.isDisponivel()) throw new BibliotecaException("Livro indisponível!");
-
-        LocalDate hoje = LocalDate.now();
-        LocalDate devolucao = hoje.plusDays(u.calcularPrazoDevolucao());
-
-        Emprestimo e = new Emprestimo(l, u, hoje, devolucao);
-        emprestimos.add(e);
-        u.adicionarEmprestimo(e);
-        l.setDisponivel(false);
+        // implementar depois
     }
 
-    public void registrarDevolucao(Emprestimo e) {
-        e.setDataDevolucaoReal(LocalDate.now());
-        e.getLivro().setDisponivel(true);
+    public void registrarDevolucao(Usuario u, Livro l) {
+        // implementar depois
     }
 
-    public List<Livro> listarLivros() { return livros; }
-    public List<Usuario> listarUsuarios() { return usuarios; }
+    public void listarPendencias() {
+        // implementar depois
+    }
 }

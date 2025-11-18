@@ -2,12 +2,10 @@ package main.model;
 
 public class Aluno extends Usuario {
 
-    public Aluno(String nome, String matricula) {
-        super(nome, matricula);
-    }
+    private String matricula;
 
     @Override
     public int calcularPrazoDevolucao() {
-        return 14; // 14 dias para aluno
+        return 7; // 7 dias para alunos
     }
 }
