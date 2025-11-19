@@ -1,13 +1,19 @@
 package main.model;
 
 public class LivroDigital extends Livro {
+    public LivroDigital() {
+        // construtor padrão
+    }
 
     public LivroDigital(String titulo, Autor autor, String isbn) {
-        super(titulo, autor, isbn);
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.disponivel = true;
     }
 
     @Override
     public boolean isDisponivel() {
-        return true; // livros digitais sempre disponíveis
+        return true; // digitais sempre disponíveis
     }
 }

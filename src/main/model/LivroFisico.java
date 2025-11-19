@@ -1,9 +1,15 @@
 package main.model;
 
 public class LivroFisico extends Livro {
+    public LivroFisico() {
+        // construtor padrão
+    }
 
     public LivroFisico(String titulo, Autor autor, String isbn) {
-        super(titulo, autor, isbn);
+        this.titulo = titulo;
+        this.autor = autor;
+        this.isbn = isbn;
+        this.disponivel = true;
     }
 
     @Override
@@ -11,4 +17,5 @@ public class LivroFisico extends Livro {
         return disponivel;
     }
 }
+
     

@@ -6,13 +6,6 @@ public abstract class Livro {
     protected String isbn;
     protected boolean disponivel;
 
-    public Livro(String titulo, Autor autor, String isbn) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.isbn = isbn;
-        this.disponivel = true;
-    }
-
     public abstract boolean isDisponivel();
 
     public String getTitulo() {
