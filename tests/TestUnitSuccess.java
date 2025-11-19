@@ -7,12 +7,10 @@ import main.exception.BibliotecaException;
 public class TestUnitSuccess {
     public static void main(String[] args) {
         BibliotecaService svc = new BibliotecaService();
-        Autor autor = new Autor("A","B","BR");
-        svc.cadastrarAutor(autor);
-    LivroFisico livro = new LivroFisico("T", autor, "ISBN1");
-        svc.cadastrarLivro(livro);
-        Aluno aluno = new Aluno("N","U1","M1");
-        svc.cadastrarUsuario(aluno);
+        // usar API do service para criar autor/livro/usuario
+        Autor autor = svc.cadastrarAutor("A", "B", "BR");
+        Livro livro = svc.cadastrarLivro("T", autor.getId(), "ISBN1", "fisico");
+        Usuario aluno = svc.cadastrarUsuario("N", "U1", "aluno");
 
         try {
             svc.realizarEmprestimo(aluno, livro);

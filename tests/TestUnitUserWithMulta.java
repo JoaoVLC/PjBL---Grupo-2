@@ -7,13 +7,10 @@ import main.exception.BibliotecaException;
 public class TestUnitUserWithMulta {
     public static void main(String[] args) {
         BibliotecaService svc = new BibliotecaService();
-        Autor autor = new Autor("A","B","BR");
-        svc.cadastrarAutor(autor);
-    LivroFisico livro = new LivroFisico("T", autor, "ISBN2");
-        svc.cadastrarLivro(livro);
-        Aluno aluno = new Aluno("N","U2","M2");
+        Autor autor = svc.cadastrarAutor("A", "B", "BR");
+        Livro livro = svc.cadastrarLivro("T", autor.getId(), "ISBN2", "fisico");
+        Usuario aluno = svc.cadastrarUsuario("N", "U2", "aluno");
         aluno.adicionarMulta(10.0);
-        svc.cadastrarUsuario(aluno);
 
         try {
             svc.realizarEmprestimo(aluno, livro);
