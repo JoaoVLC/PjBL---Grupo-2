@@ -6,6 +6,12 @@ import main.exception.BibliotecaException;
 
 import java.text.SimpleDateFormat;
 
+/*
+ * CheckDates
+ * - Classe utilitária de testes para verificar funcionamento de datas de empréstimo.
+ * - Cria autor, livro, usuário e imprime as datas do empréstimo.
+ */
+
 public class CheckDates {
     public static void main(String[] args) {
         BibliotecaService svc = new BibliotecaService();

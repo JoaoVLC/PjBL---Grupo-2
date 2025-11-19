@@ -16,6 +16,7 @@ public class Menu {
         this.service = service;
     }
 
+    // exibirMenuPrincipal - [loop principal do menu console]
     public void exibirMenuPrincipal() {
         int opcao;
         do {
@@ -46,6 +47,7 @@ public class Menu {
         } while (opcao != 0);
     }
 
+    // cadastrarAutor - [lê dados do console e chama service.cadastrarAutor]
     private void cadastrarAutor() {
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
@@ -58,6 +60,7 @@ public class Menu {
         if (autor != null) System.out.println("Autor cadastrado: " + autor);
     }
 
+    // cadastrarLivro - [lista autores, pede ID do autor, tipo e chama service.cadastrarLivro]
     private void cadastrarLivro() {
         System.out.print("Título: ");
         String titulo = scanner.nextLine();
@@ -86,6 +89,7 @@ public class Menu {
         if (livro != null) System.out.println("Livro cadastrado: " + livro);
     }
 
+    // cadastrarUsuario - [transforma opção numerica em "aluno" ou "professor" antes de chamar service]
     private void cadastrarUsuario() {
         System.out.print("Tipo (1-Aluno / 2-Professor): ");
         int tipo = scanner.nextInt();
@@ -101,6 +105,7 @@ public class Menu {
         if (usuario != null) System.out.println("Usuário cadastrado: " + usuario);
     }
 
+    // realizarEmprestimo - [lê id do usuário e ISBN do livro e chama service.realizarEmprestimo]
     private void realizarEmprestimo() {
         System.out.print("Digite o ID do usuário: ");
         String idUser = scanner.nextLine();
@@ -131,6 +136,7 @@ public class Menu {
         }
     }
 
+    // registrarDevolucao - [lê id do usuário e isbn, chama service.registrarDevolucao e mostra multa atual]
     private void registrarDevolucao() {
         System.out.print("Digite o ID do usuário: ");
         String idUser = scanner.nextLine();
@@ -152,6 +158,7 @@ public class Menu {
         System.out.println("Devolução registrada. Multa atual do usuário: " + usuario.getMulta());
     }
 
+    // pagarMultas - [lê id do usuário, quita todas as multas e informa o total quitado]
     private void pagarMultas() {
         System.out.print("Digite o ID do usuário: ");
         String idUser = scanner.nextLine();

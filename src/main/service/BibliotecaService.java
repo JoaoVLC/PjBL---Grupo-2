@@ -4,6 +4,13 @@ import main.model.*;
 import main.exception.BibliotecaException;
 import java.util.*;
 
+/*
+ * BibliotecaService
+ * - Camada de serviço que contém a lógica do sistema (regras de negócio).
+ * - Mantém coleções em memória (listas de usuários, autores, livros, empréstimos).
+ * - Fornece métodos CRUD e ações (emprestar, devolver, quitar multas).
+ */
+
 public class BibliotecaService {
 
     private List<Usuario> usuarios;
@@ -11,16 +18,33 @@ public class BibliotecaService {
     private List<Autor> autores;
     private List<Emprestimo> emprestimos;
 
+    // constantes de caminho de arquivos (opcionais; se não usar, podem ser removidas)
+    private static final String ARQ_AUTORES = "src/main/resources/autores.txt";
+    private static final String ARQ_USUARIOS = "src/main/resources/usuarios.txt";
+    private static final String ARQ_LIVROS = "src/main/resources/livros.txt";
+
+    // construtor - [inicializa listas e tenta carregar arquivos via ArquivoTxtService]
     public BibliotecaService() {
         autores = new ArrayList<>();
         usuarios = new ArrayList<>();
         livros = new ArrayList<>();
         emprestimos = new ArrayList<>();
+
+        try {
+            ArquivoTxtService.carregarAutores(ARQ_AUTORES, this);
+            ArquivoTxtService.carregarUsuarios(ARQ_USUARIOS, this);
+            ArquivoTxtService.carregarLivros(ARQ_LIVROS, this);
+        } catch (Exception e) {
+            System.out.println("Nenhum arquivo encontrado. Iniciando vazio.");
+        }
+
     }
 
     // =================== AUTORES ===================
+
     public Autor cadastrarAutor(String nome, String sobrenome, String nacionalidade) {
 
+        // valida duplicidade por nome completo (case-insensitive)
         for (Autor a : autores) {
             if (a.getNomeCompleto().equalsIgnoreCase(nome + " " + sobrenome)) {
                 System.out.println("Autor já existe!");
@@ -28,15 +52,26 @@ public class BibliotecaService {
             }
         }
 
+        // criar novo autor e adicionar à lista
         Autor novo = new Autor(nome, sobrenome, nacionalidade);
         autores.add(novo);
+
+        // opcional: salvar em arquivo (captura exceção para não interromper execução)
+        try {
+            ArquivoTxtService.salvarAutores(ARQ_AUTORES, autores);
+        } catch (Exception e) {
+            System.out.println("ERRO ao salvar autores no arquivo!");
+        }
+
         return novo;
     }
 
+    // listarAutores - [retorna lista de autores em memória]
     public List<Autor> listarAutores() {
         return autores;
     }
 
+    // buscarAutorPorId - [procura autor pelo idAutor]
     public Autor buscarAutorPorId(int idAutor) {
         for (Autor a : autores) {
             if (a.getId() == idAutor) return a;
@@ -45,6 +80,7 @@ public class BibliotecaService {
     }
 
     // =================== USUÁRIOS ===================
+
     public Usuario cadastrarUsuario(String nome, String id, String tipo) {
 
         if (buscarUsuarioPorId(id) != null) {
@@ -64,9 +100,18 @@ public class BibliotecaService {
         }
 
         usuarios.add(novo);
+
+        // opcional: salvar em arquivo
+        try {
+            ArquivoTxtService.salvarUsuarios(ARQ_USUARIOS, usuarios);
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar usuários");
+        }
+
         return novo;
     }
 
+    // buscarUsuarioPorId - [procura usuário pelo id (case-insensitive)]
     public Usuario buscarUsuarioPorId(String id) {
         for (Usuario u : usuarios) {
             if (u.getId().equalsIgnoreCase(id)) return u;
@@ -74,11 +119,13 @@ public class BibliotecaService {
         return null;
     }
 
+    // listarUsuarios - [retorna lista de usuários em memória]
     public List<Usuario> listarUsuarios() {
         return usuarios;
     }
 
     // =================== LIVROS ===================
+
     public Livro cadastrarLivro(String titulo, int idAutor, String isbn, String tipo) {
 
         Autor autor = buscarAutorPorId(idAutor);
@@ -106,9 +153,18 @@ public class BibliotecaService {
         }
 
         livros.add(novo);
+
+        // opcional: salvar em arquivo
+        try {
+            ArquivoTxtService.salvarLivros(ARQ_LIVROS, livros);
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar livros");
+        }
+
         return novo;
     }
 
+    // buscarLivroPorISBN - [procura livro na lista por ISBN (case-insensitive)]
     public Livro buscarLivroPorISBN(String isbn) {
         for (Livro l : livros) {
             if (l.getIsbn().equalsIgnoreCase(isbn)) return l;
@@ -116,6 +172,7 @@ public class BibliotecaService {
         return null;
     }
 
+    // listarLivros - [retorna lista de livros em memória]
     public List<Livro> listarLivros() {
         return livros;
     }
@@ -132,6 +189,11 @@ public class BibliotecaService {
             throw new BibliotecaException("Livro indisponível.");
         }
 
+        // demonstração explícita de polimorfismo
+        int dias = u.calcularPrazoDevolucao();
+        System.out.println("Prazo de devolução para " + u.getNome() + ": " + dias + " dias.");
+
+        // calcula data prevista de devolução
         Date hoje = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(hoje);
@@ -167,17 +229,20 @@ public class BibliotecaService {
         l.setDisponivel(true);
     }
 
+    // getEmprestimos - [retorna lista de empréstimos em memória]
     public List<Emprestimo> getEmprestimos() {
         return emprestimos;
     }
 
+    // quitarMultasUsuario - [retorna total antes de quitar e marca multas quitadas]
     public double quitarMultasUsuario(Usuario u) {
         double total = u.getMulta();
         u.pagarMulta();
         return total;
     }
 
+    // listarPendencias - [espaço para implementar futura listagem de pendentes]
     public void listarPendencias() {
-        // opcional
+        // opcional: implementar listagem de usuários com multas ou empréstimos atrasados
     }
 }

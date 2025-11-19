@@ -11,7 +11,7 @@ public class TestFlow {
     public static void main(String[] args) throws Exception {
         BibliotecaService svc = new BibliotecaService();
 
-    // Criar autor, livro e aluno via service
+    // criar dados iniciais via service
     Autor autor = svc.cadastrarAutor("Joao", "Silva", "BR");
     Livro livro = svc.cadastrarLivro("Java 101", autor.getId(), "ISBN001", "fisico");
     Usuario aluno = svc.cadastrarUsuario("Maria", "U1", "aluno");
@@ -42,6 +42,7 @@ public class TestFlow {
         c2.add(Calendar.DATE, 7);
         Date prevista = c2.getTime();
 
+        // cria empréstimo manual (simula empréstimo antigo)
         Emprestimo e = new Emprestimo(livro2, aluno2, retirada, prevista);
         svc.adicionarEmprestimo(e);
 

@@ -2,7 +2,6 @@ package main.model;
 
 public class LivroDigital extends Livro {
     public LivroDigital() {
-        // construtor padrão
     }
 
     public LivroDigital(String titulo, Autor autor, String isbn) {

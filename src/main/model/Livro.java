@@ -6,8 +6,10 @@ public abstract class Livro {
     protected String isbn;
     protected boolean disponivel;
 
+    // metodo abstrato - [define disponibilidade de forma polimórfica]
     public abstract boolean isDisponivel();
 
+    // getters e setter - [acesso/controle dos atributos]
     public String getTitulo() {
         return titulo;
     }
@@ -24,6 +26,7 @@ public abstract class Livro {
         return disponivel;
     }
 
+    // metodo - [permite alterar disponibilidade (usado em empréstimo/devolução)]
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
     }

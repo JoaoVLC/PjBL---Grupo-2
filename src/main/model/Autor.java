@@ -7,7 +7,7 @@ public class Autor {
     private String nacionalidade;
     private static int contadorIdAutor = 1;
 
-
+    // construtor - [cria autor e atribui id automático]
     public Autor(String nome, String sobrenome, String nacionalidade) {
         this.idAutor = contadorIdAutor++;
         this.nome = nome;
@@ -15,14 +15,17 @@ public class Autor {
         this.nacionalidade = nacionalidade;
     }
 
+    // getter - [retorna id do autor]
     public int getId() {
         return idAutor;
     }
 
+    // metodo - [retorna nome completo concatenado]
     public String getNomeCompleto() {
         return nome + " " + sobrenome;
     }
 
+    // getter - [retorna nacionalidade]
     public String getNacionalidade() {
         return nacionalidade;
     }

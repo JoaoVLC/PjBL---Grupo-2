@@ -1,0 +1,4 @@
+Carlos,2021001,aluno
+Marina,2021002,aluno
+Rogério,PROF001,professor
+Ana Paula,PROF002,professor

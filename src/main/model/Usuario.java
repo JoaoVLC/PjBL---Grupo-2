@@ -8,23 +8,24 @@ public abstract class Usuario {
     protected ArrayList<Emprestimo> emprestimos = new ArrayList<>();
     protected ArrayList<Multa> multas = new ArrayList<>();
 
-    // Construtor
+    // construtor - [inicializa nome e id]
     public Usuario(String nome, String id) {
         this.nome = nome;
         this.id = id;
         // multas já inicializada na declaração
     }
 
-    // Emprestimos
+    // metodo - [adiciona um empréstimo ao histórico do usuário]
     public void adicionarEmprestimo(Emprestimo e) {
         emprestimos.add(e);
     }
 
+    // metodo - [retorna lista de empréstimos]
     public ArrayList<Emprestimo> getEmprestimos() {
         return emprestimos;
     }
 
-    // Multa: agora modelada como objetos Multa
+    // metodo - [marca todas as multas como quitadas]
     public void pagarMulta() {
         // quita todas as multas pendentes
         for (Multa m : multas) {
@@ -32,6 +33,7 @@ public abstract class Usuario {
         }
     }
 
+    // metodo - [retorna soma das multas não pagas]
     public double getMulta() {
         double soma = 0;
         for (Multa m : multas) {
@@ -40,25 +42,28 @@ public abstract class Usuario {
         return soma;
     }
 
+    // metodo - [cria e adiciona multa para o usuário]
     public void adicionarMulta(double valor) {
         Multa m = new Multa(valor);
         multas.add(m);
     }
 
+    // metodo - [retorna lista de objetos Multa]
     public java.util.List<Multa> getMultas() {
         return multas;
     }
 
-    // Getters básicos
+    // getter - [retorna o nome do usuário]
     public String getNome() {
         return nome;
     }
 
+    // getter - [retorna o id (matrícula ou RH)]
     public String getId() {
         return id;
     }
 
-    // Método abstrato
+    // metodo abstrato - [cada subclasse define o prazo de devolução]
     public abstract int calcularPrazoDevolucao();
 
     @Override

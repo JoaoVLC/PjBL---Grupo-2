@@ -10,6 +10,7 @@ public class Emprestimo {
     private Date dataPrevista;
     private Date dataDevolucao;
 
+    // construtor - [cria o registro do empréstimo; dataDevolucao inicia como null]
     public Emprestimo(Livro livro, Usuario usuario, Date dataEmprestimo, Date dataPrevista) {
         this.livro = livro;
         this.usuario = usuario;
@@ -18,6 +19,7 @@ public class Emprestimo {
         this.dataDevolucao = null;
     }
 
+    // getters - [retornam atributos]
     public Livro getLivro() {
         return livro;
     }
@@ -38,14 +40,17 @@ public class Emprestimo {
         return dataDevolucao;
     }
 
+    // setter - [registra a data em que o livro foi devolvido]
     public void setDataDevolucao(Date dataDevolucao) {
         this.dataDevolucao = dataDevolucao;
     }
 
+    // metodo - [verifica se houve atraso comparando dataDevolucao e dataPrevista]
     public boolean estaAtrasado() {
         return dataDevolucao != null && dataDevolucao.after(dataPrevista);
     }
 
+    // metodo - [calcula multa baseada em dias de atraso (R$2 por dia)]
     public double calcularMulta() {
         if (!estaAtrasado()) return 0;
         long diasAtraso = (dataDevolucao.getTime() - dataPrevista.getTime()) / 86400000;
