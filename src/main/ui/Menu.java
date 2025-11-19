@@ -2,8 +2,10 @@ package main.ui;
 
 import main.model.*;
 import main.service.BibliotecaService;
+import main.exception.BibliotecaException;
 
 import java.util.Scanner;
+import java.util.List;
 
 public class Menu {
 
@@ -16,7 +18,6 @@ public class Menu {
 
     public void exibirMenuPrincipal() {
         int opcao;
-
         do {
             System.out.println("\n==== SISTEMA DE BIBLIOTECA ====");
             System.out.println("1. Cadastrar Autor");
@@ -51,51 +52,36 @@ public class Menu {
         System.out.print("Nacionalidade: ");
         String nac = scanner.nextLine();
 
-        Autor autor = new Autor(nome, sobrenome, nac);
-        service.cadastrarAutor(autor);
-
-        System.out.println("Autor cadastrado com sucesso!");
+        Autor autor = service.cadastrarAutor(nome, sobrenome, nac);
+        if (autor != null) System.out.println("Autor cadastrado: " + autor);
     }
 
     private void cadastrarLivro() {
         System.out.print("Título: ");
         String titulo = scanner.nextLine();
-
         System.out.print("ISBN: ");
         String isbn = scanner.nextLine();
 
-        // Listar autores para selecionar
-        System.out.println("Escolha o autor (digite o índice):");
-        var autores = service.getAutores();
+        List<Autor> autores = service.listarAutores();
         if (autores.isEmpty()) {
-            System.out.println("Nenhum autor cadastrado. Cadastre um autor antes de cadastrar um livro.");
-            return;
-        }
-        for (int i = 0; i < autores.size(); i++) {
-            System.out.println(i + " - " + autores.get(i).getNome());
-        }
-
-        int indexAutor = scanner.nextInt();
-        scanner.nextLine();
-
-        if (indexAutor < 0 || indexAutor >= autores.size()) {
-            System.out.println("Índice de autor inválido.");
+            System.out.println("Nenhum autor cadastrado. Cadastre um autor antes.");
             return;
         }
 
-        Autor autorEscolhido = autores.get(indexAutor);
+        System.out.println("Autores disponíveis:");
+        for (Autor a : autores) {
+            System.out.println(a.getId() + " - " + a.getNomeCompleto());
+        }
 
-        System.out.print("Tipo do livro (1-Físico, 2-Digital): ");
-        int tipo = scanner.nextInt();
+        System.out.print("Digite o ID do autor: ");
+        int idAutor = scanner.nextInt();
         scanner.nextLine();
 
-        Livro l = (tipo == 1)
-                ? new LivroFisico(titulo, autorEscolhido, isbn)
-                : new LivroDigital(titulo, autorEscolhido, isbn);
+        System.out.print("Tipo (fisico/digital): ");
+        String tipo = scanner.nextLine();
 
-        service.cadastrarLivro(l);
-
-        System.out.println("Livro cadastrado com sucesso!");
+        Livro livro = service.cadastrarLivro(titulo, idAutor, isbn, tipo);
+        if (livro != null) System.out.println("Livro cadastrado: " + livro);
     }
 
     private void cadastrarUsuario() {
@@ -105,96 +91,62 @@ public class Menu {
 
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
-
-        System.out.print("ID do usuário: ");
+        System.out.print("Identificador (Matrícula ou RH): ");
         String id = scanner.nextLine();
 
-        Usuario usuario;
-
-        if (tipo == 1) {
-            System.out.print("Matrícula: ");
-            String matricula = scanner.nextLine();
-            usuario = new Aluno(nome, id, matricula);
-        } else {
-            System.out.print("Número RH: ");
-            String rh = scanner.nextLine();
-            usuario = new Professor(nome, id, rh);
-        }
-
-        service.cadastrarUsuario(usuario);
-        System.out.println("Usuário cadastrado!");
+        String tipoUser = (tipo == 1) ? "aluno" : "professor";
+        Usuario usuario = service.cadastrarUsuario(nome, id, tipoUser);
+        if (usuario != null) System.out.println("Usuário cadastrado: " + usuario);
     }
 
     private void realizarEmprestimo() {
-        var usuarios = service.getUsuarios();
-        var livros = service.getLivros();
-
-        if (usuarios.isEmpty()) {
-            System.out.println("Nenhum usuário cadastrado.");
-            return;
-        }
-        if (livros.isEmpty()) {
-            System.out.println("Nenhum livro cadastrado.");
+        System.out.print("Digite o ID do usuário: ");
+        String idUser = scanner.nextLine();
+        Usuario usuario = service.buscarUsuarioPorId(idUser);
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado!");
             return;
         }
 
-        System.out.println("Escolha o usuário (índice):");
-        for (int i = 0; i < usuarios.size(); i++) {
-            System.out.println(i + " - " + usuarios.get(i).getNome());
+        System.out.println("Livros disponíveis:");
+        for (Livro l : service.listarLivros()) {
+            if (l.isDisponivel()) System.out.println(l.getIsbn() + " - " + l.getTitulo());
         }
-        int iu = scanner.nextInt();
-        scanner.nextLine();
 
-        System.out.println("Escolha o livro (índice):");
-        for (int i = 0; i < livros.size(); i++) {
-            System.out.println(i + " - " + livros.get(i).getTitulo() + " (disponível: " + livros.get(i).isDisponivel() + ")");
+        System.out.print("Digite o ISBN do livro: ");
+        String isbn = scanner.nextLine();
+        Livro livro = service.buscarLivroPorISBN(isbn);
+        if (livro == null) {
+            System.out.println("Livro não encontrado!");
+            return;
         }
-        int il = scanner.nextInt();
-        scanner.nextLine();
-
-        Usuario usuario = usuarios.get(iu);
-        Livro livro = livros.get(il);
 
         try {
             service.realizarEmprestimo(usuario, livro);
-            System.out.println("Empréstimo realizado com sucesso. Data de retirada: hoje. Data prevista calculada pelo usuário.");
-        } catch (Exception ex) {
-            System.out.println("Falha ao realizar empréstimo: " + ex.getMessage());
+            System.out.println("Empréstimo realizado com sucesso!");
+        } catch (BibliotecaException e) {
+            System.out.println("Erro: " + e.getMessage());
         }
     }
 
     private void registrarDevolucao() {
-        var usuarios = service.getUsuarios();
-        var livros = service.getLivros();
-
-        if (usuarios.isEmpty()) {
-            System.out.println("Nenhum usuário cadastrado.");
-            return;
-        }
-        if (livros.isEmpty()) {
-            System.out.println("Nenhum livro cadastrado.");
+        System.out.print("Digite o ID do usuário: ");
+        String idUser = scanner.nextLine();
+        Usuario usuario = service.buscarUsuarioPorId(idUser);
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado!");
             return;
         }
 
-        System.out.println("Escolha o usuário (índice):");
-        for (int i = 0; i < usuarios.size(); i++) {
-            System.out.println(i + " - " + usuarios.get(i).getNome());
+        System.out.print("Digite o ISBN do livro: ");
+        String isbn = scanner.nextLine();
+        Livro livro = service.buscarLivroPorISBN(isbn);
+        if (livro == null) {
+            System.out.println("Livro não encontrado!");
+            return;
         }
-        int iu = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.println("Escolha o livro (índice):");
-        for (int i = 0; i < livros.size(); i++) {
-            System.out.println(i + " - " + livros.get(i).getTitulo());
-        }
-        int il = scanner.nextInt();
-        scanner.nextLine();
-
-        Usuario usuario = usuarios.get(iu);
-        Livro livro = livros.get(il);
 
         service.registrarDevolucao(usuario, livro);
-        System.out.println("Devolução registrada (se havia empréstimo ativo). Multa atual do usuário: " + usuario.getMulta());
+        System.out.println("Devolução registrada. Multa atual do usuário: " + usuario.getMulta());
     }
 }
-

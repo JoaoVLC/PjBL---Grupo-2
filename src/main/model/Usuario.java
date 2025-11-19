@@ -8,12 +8,23 @@ public abstract class Usuario {
     protected ArrayList<Emprestimo> emprestimos = new ArrayList<>();
     protected double multa;
 
-    public abstract int calcularPrazoDevolucao();
+    // Construtor
+    public Usuario(String nome, String id) {
+        this.nome = nome;
+        this.id = id;
+        this.multa = 0;
+    }
 
+    // Emprestimos
     public void adicionarEmprestimo(Emprestimo e) {
         emprestimos.add(e);
     }
 
+    public ArrayList<Emprestimo> getEmprestimos() {
+        return emprestimos;
+    }
+
+    // Multa
     public void pagarMulta() {
         this.multa = 0;
     }
@@ -26,14 +37,20 @@ public abstract class Usuario {
         this.multa += valor;
     }
 
+    // Getters básicos
     public String getNome() {
         return nome;
     }
 
-    public java.util.ArrayList<Emprestimo> getEmprestimos() {
-        return emprestimos;
+    public String getId() {
+        return id;
     }
 
-    // getters e setters
-}
+    // Método abstrato
+    public abstract int calcularPrazoDevolucao();
 
+    @Override
+    public String toString() {
+        return nome + " | ID: " + id + " | Multa: R$ " + multa;
+    }
+}
