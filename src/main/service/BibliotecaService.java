@@ -158,23 +158,24 @@ public class BibliotecaService {
         }
 
         Date hoje = new Date();
-
         Calendar cal = Calendar.getInstance();
         cal.setTime(hoje);
         cal.add(Calendar.DATE, u.calcularPrazoDevolucao());
         Date prevista = cal.getTime();
 
         Emprestimo e = new Emprestimo(l, u, hoje, prevista);
+
+        // Atualiza estado em memória primeiro
         emprestimos.add(e);
-        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
-        ArquivoService.salvar(ARQ_LIVROS, livros); // livro ficou indisponível
-        ArquivoService.salvar(ARQ_USUARIOS, usuarios); // usuário ganhou empréstimo
-
-
-
         u.adicionarEmprestimo(e);
         l.setDisponivel(false);
+
+        // Depois salva tudo no disco
+        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
+        ArquivoService.salvar(ARQ_LIVROS, livros);
+        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
     }
+
 
 
 
@@ -215,10 +216,24 @@ public class BibliotecaService {
     }
 
 
+
+
     public void adicionarEmprestimo(Emprestimo e) {
         emprestimos.add(e);
         e.getUsuario().adicionarEmprestimo(e);
         e.getLivro().setDisponivel(false);
+    }
+
+    // adiciona este método na classe BibliotecaService
+    public double quitarMultasUsuario(Usuario u) {
+        if (u == null) return 0.0;
+        double total = u.getMulta();  // soma das multas abertas
+        if (total > 0) {
+            u.pagarMulta(); // já implementado para quitar todas as Multa no Usuario
+            // salva alteração no arquivo
+            ArquivoService.salvar(ARQ_USUARIOS, usuarios);
+        }
+        return total;
     }
 
 
