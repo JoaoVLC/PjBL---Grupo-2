@@ -18,6 +18,22 @@ public abstract class Usuario {
         this.multa = 0;
     }
 
+    public double getMulta() {
+        return multa;
+    }
+
+    public void adicionarMulta(double valor) {
+        this.multa += valor;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public java.util.ArrayList<Emprestimo> getEmprestimos() {
+        return emprestimos;
+    }
+
     // getters e setters
 }
 

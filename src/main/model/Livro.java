@@ -7,5 +7,13 @@ public abstract class Livro {
     protected boolean disponivel;
 
     public abstract boolean isDisponivel();
+
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
 }
 

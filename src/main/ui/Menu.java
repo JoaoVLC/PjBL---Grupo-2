@@ -67,12 +67,21 @@ public class Menu {
         // Listar autores para selecionar
         System.out.println("Escolha o autor (digite o índice):");
         var autores = service.getAutores();
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor cadastrado. Cadastre um autor antes de cadastrar um livro.");
+            return;
+        }
         for (int i = 0; i < autores.size(); i++) {
             System.out.println(i + " - " + autores.get(i).getNome());
         }
 
         int indexAutor = scanner.nextInt();
         scanner.nextLine();
+
+        if (indexAutor < 0 || indexAutor >= autores.size()) {
+            System.out.println("Índice de autor inválido.");
+            return;
+        }
 
         Autor autorEscolhido = autores.get(indexAutor);
 
@@ -117,13 +126,75 @@ public class Menu {
     }
 
     private void realizarEmprestimo() {
-        // implementaremos depois
-        System.out.println("Função ainda não implementada.");
+        var usuarios = service.getUsuarios();
+        var livros = service.getLivros();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro cadastrado.");
+            return;
+        }
+
+        System.out.println("Escolha o usuário (índice):");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).getNome());
+        }
+        int iu = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Escolha o livro (índice):");
+        for (int i = 0; i < livros.size(); i++) {
+            System.out.println(i + " - " + livros.get(i).getTitulo() + " (disponível: " + livros.get(i).isDisponivel() + ")");
+        }
+        int il = scanner.nextInt();
+        scanner.nextLine();
+
+        Usuario usuario = usuarios.get(iu);
+        Livro livro = livros.get(il);
+
+        try {
+            service.realizarEmprestimo(usuario, livro);
+            System.out.println("Empréstimo realizado com sucesso. Data de retirada: hoje. Data prevista calculada pelo usuário.");
+        } catch (Exception ex) {
+            System.out.println("Falha ao realizar empréstimo: " + ex.getMessage());
+        }
     }
 
     private void registrarDevolucao() {
-        // implementaremos depois
-        System.out.println("Função ainda não implementada.");
+        var usuarios = service.getUsuarios();
+        var livros = service.getLivros();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("Nenhum usuário cadastrado.");
+            return;
+        }
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro cadastrado.");
+            return;
+        }
+
+        System.out.println("Escolha o usuário (índice):");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).getNome());
+        }
+        int iu = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Escolha o livro (índice):");
+        for (int i = 0; i < livros.size(); i++) {
+            System.out.println(i + " - " + livros.get(i).getTitulo());
+        }
+        int il = scanner.nextInt();
+        scanner.nextLine();
+
+        Usuario usuario = usuarios.get(iu);
+        Livro livro = livros.get(il);
+
+        service.registrarDevolucao(usuario, livro);
+        System.out.println("Devolução registrada (se havia empréstimo ativo). Multa atual do usuário: " + usuario.getMulta());
     }
 }
 

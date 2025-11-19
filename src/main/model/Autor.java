@@ -18,4 +18,8 @@ public class Autor {
     public String getNacionalidade() {
         return nacionalidade;
     }
+
+    public String getNome() {
+        return nome;
+    }
 }
