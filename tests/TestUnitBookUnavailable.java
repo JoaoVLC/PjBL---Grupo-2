@@ -7,13 +7,10 @@ import main.exception.BibliotecaException;
 public class TestUnitBookUnavailable {
     public static void main(String[] args) {
         BibliotecaService svc = new BibliotecaService();
-        Autor autor = new Autor("A","B","BR");
-        svc.cadastrarAutor(autor);
-    LivroFisico livro = new LivroFisico("T", autor, "ISBN3");
-        livro.setDisponivel(false); // já emprestado
-        svc.cadastrarLivro(livro);
-        Aluno aluno = new Aluno("N","U3","M3");
-        svc.cadastrarUsuario(aluno);
+        Autor autor = svc.cadastrarAutor("A", "B", "BR");
+        Livro livro = svc.cadastrarLivro("T", autor.getId(), "ISBN3", "fisico");
+        if (livro != null) livro.setDisponivel(false); // já emprestado
+        Usuario aluno = svc.cadastrarUsuario("N", "U3", "aluno");
 
         try {
             svc.realizarEmprestimo(aluno, livro);
