@@ -1,4 +1,7 @@
-Machado,De Assis,Brasil
-Jorge,Amado,Brasil
-Mary,Shelley,Reino Unido
-George,Orwell,Reino Unido
+1,De Assis,Brasil
+2,Amado ,Brasil
+3,Shelley ,Reino Unido
+4,Orwell ,Reino Unido
+5,joao vitor,brasil
+6,jorge lucas,suecia
+7,henrique Dias,Alemao

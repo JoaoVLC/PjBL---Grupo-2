@@ -1,4 +1,3 @@
-Dom Casmurro,1,978-85-359-0277-6,fisico
-Capitães da Areia,2,978-85-359-1344-4,fisico
-Frankenstein,3,978-85-359-2000-8,digital
-1984,4,978-85-359-1002-2,fisico
+FISICO,kkkkkkkk,1,44,true
+DIGITAL,hhhhhh,2,55,true
+FISICO,fsjdfhisk,2,77,true

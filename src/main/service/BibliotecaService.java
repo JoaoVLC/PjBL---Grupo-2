@@ -234,6 +234,18 @@ public class BibliotecaService {
         return emprestimos;
     }
 
+    public void adicionarEmprestimo(Emprestimo e) {
+
+        // adiciona na lista normal
+        emprestimos.add(e);
+
+        // relaciona emprestimo ao usuário
+        e.getUsuario().adicionarEmprestimo(e);
+
+        // marca livro como indisponível
+        e.getLivro().setDisponivel(false);
+    }
+
     // quitarMultasUsuario - [retorna total antes de quitar e marca multas quitadas]
     public double quitarMultasUsuario(Usuario u) {
         double total = u.getMulta();

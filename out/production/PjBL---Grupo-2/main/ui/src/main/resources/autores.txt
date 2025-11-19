@@ -1,0 +1,4 @@
+Machado,De Assis,Brasil
+Jorge,Amado,Brasil
+Mary,Shelley,Reino Unido
+George,Orwell,Reino Unido
