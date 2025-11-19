@@ -3,34 +3,36 @@ package main.service;
 import main.model.*;
 import main.exception.BibliotecaException;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class BibliotecaService {
 
-    private List<Usuario> usuarios = new ArrayList<>();
-    private List<Livro> livros = new ArrayList<>();
-    private List<Autor> autores = new ArrayList<>();
-    private List<Emprestimo> emprestimos = new ArrayList<>();
+    private Repository<Usuario> usuarios = new Repository<>();
+    private Repository<Livro> livros = new Repository<>();
+    private Repository<Autor> autores = new Repository<>();
+    private Repository<Emprestimo> emprestimos = new Repository<>();
+
 
     // =================== AUTORES ===================
 
     public Autor cadastrarAutor(String nome, String sobrenome, String nacionalidade) {
+
         for (Autor a : autores) {
             if (a.getNomeCompleto().equalsIgnoreCase(nome + " " + sobrenome)) {
                 System.out.println("Autor já existe!");
                 return null;
             }
         }
+
         Autor novo = new Autor(nome, sobrenome, nacionalidade);
         autores.add(novo);
         return novo;
     }
 
     public List<Autor> listarAutores() {
-        return autores;
+        return autores.getAll();
     }
 
     public Autor buscarAutorPorId(int idAutor) {
@@ -40,15 +42,19 @@ public class BibliotecaService {
         return null;
     }
 
+
+
     // =================== USUÁRIOS ===================
 
     public Usuario cadastrarUsuario(String nome, String id, String tipo) {
+
         if (buscarUsuarioPorId(id) != null) {
             System.out.println("Já existe um usuário com esse ID!");
             return null;
         }
 
         Usuario novo;
+
         if (tipo.equalsIgnoreCase("aluno")) {
             novo = new Aluno(nome, id);
         } else if (tipo.equalsIgnoreCase("professor")) {
@@ -70,29 +76,41 @@ public class BibliotecaService {
     }
 
     public List<Usuario> listarUsuarios() {
-        return usuarios;
+        return usuarios.getAll();
     }
+
+
 
     // =================== LIVROS ===================
 
-    public void cadastrarLivro(Livro l) {
-        livros.add(l);
-    }
-
     public Livro cadastrarLivro(String titulo, int idAutor, String isbn, String tipo) {
-        Autor a = buscarAutorPorId(idAutor);
-        if (a == null) {
-            System.out.println("Autor não encontrado com id: " + idAutor);
+
+        Autor autor = buscarAutorPorId(idAutor);
+        if (autor == null) {
+            System.out.println("Autor não encontrado!");
             return null;
         }
-        Livro l;
-        if (tipo.equalsIgnoreCase("fisico") || tipo.equalsIgnoreCase("f")) {
-            l = new LivroFisico(titulo, a, isbn);
-        } else {
-            l = new LivroDigital(titulo, a, isbn);
+
+        if (buscarLivroPorISBN(isbn) != null) {
+            System.out.println("Já existe um livro com esse ISBN!");
+            return null;
         }
-        livros.add(l);
-        return l;
+
+        Livro novo;
+
+        if (tipo.equalsIgnoreCase("fisico")) {
+            novo = new LivroFisico(titulo, autor, isbn);
+        }
+        else if (tipo.equalsIgnoreCase("digital")) {
+            novo = new LivroDigital(titulo, autor, isbn);
+        }
+        else {
+            System.out.println("Tipo inválido! Use 'fisico' ou 'digital'.");
+            return null;
+        }
+
+        livros.add(novo);
+        return novo;
     }
 
     public Livro buscarLivroPorISBN(String isbn) {
@@ -103,12 +121,15 @@ public class BibliotecaService {
     }
 
     public List<Livro> listarLivros() {
-        return livros;
+        return livros.getAll();
     }
+
+
 
     // =================== EMPRÉSTIMOS ===================
 
     public void realizarEmprestimo(Usuario u, Livro l) throws BibliotecaException {
+
         if (u.getMulta() > 0) {
             throw new BibliotecaException("Usuário possui multa pendente e não pode realizar empréstimo.");
         }
@@ -118,6 +139,7 @@ public class BibliotecaService {
         }
 
         Date hoje = new Date();
+
         Calendar cal = Calendar.getInstance();
         cal.setTime(hoje);
         cal.add(Calendar.DATE, u.calcularPrazoDevolucao());
@@ -125,14 +147,23 @@ public class BibliotecaService {
 
         Emprestimo e = new Emprestimo(l, u, hoje, prevista);
         emprestimos.add(e);
+
         u.adicionarEmprestimo(e);
         l.setDisponivel(false);
     }
 
+
+
     public void registrarDevolucao(Usuario u, Livro l) {
+
         Emprestimo encontrado = null;
+
         for (Emprestimo e : emprestimos) {
-            if (e.getUsuario() == u && e.getLivro() == l && e.getDataDevolucao() == null) {
+            boolean mesmoUsuario = e.getUsuario() == u;
+            boolean mesmoLivro = e.getLivro() == l;
+            boolean naoDevolvido = e.getDataDevolucao() == null;
+
+            if (mesmoUsuario && mesmoLivro && naoDevolvido) {
                 encontrado = e;
                 break;
             }
@@ -144,28 +175,17 @@ public class BibliotecaService {
         encontrado.setDataDevolucao(hoje);
 
         double multa = encontrado.calcularMulta();
-        if (multa > 0) {
-            // criar registro de Multa e associar ao usuário
-            u.adicionarMulta(multa);
-        }
+        if (multa > 0) u.adicionarMulta(multa);
 
-        // tornar o livro disponível novamente
         l.setDisponivel(true);
     }
 
-    /**
-     * Quita todas as multas pendentes do usuário e retorna o total quitado.
-     */
-    public double quitarMultasUsuario(Usuario u) {
-        double total = 0;
-        for (Multa m : u.getMultas()) {
-            if (!m.isPaga()) {
-                total += m.getValor();
-                m.quitarMulta();
-            }
-        }
-        return total;
+
+
+    public List<Emprestimo> getEmprestimos() {
+        return emprestimos.getAll();
     }
+
 
     public void adicionarEmprestimo(Emprestimo e) {
         emprestimos.add(e);
@@ -173,12 +193,8 @@ public class BibliotecaService {
         e.getLivro().setDisponivel(false);
     }
 
-    public List<Emprestimo> getEmprestimos() {
-        return emprestimos;
-    }
 
-    // =================== PENDÊNCIAS ===================
     public void listarPendencias() {
-        // Implementar lógica depois, se necessário
+        // Pode implementar depois
     }
 }
