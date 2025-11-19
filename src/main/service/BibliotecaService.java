@@ -2,37 +2,23 @@ package main.service;
 
 import main.model.*;
 import main.exception.BibliotecaException;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class BibliotecaService {
 
-    private Repository<Usuario> usuarios = new Repository<>();
-    private Repository<Livro> livros = new Repository<>();
-    private Repository<Autor> autores = new Repository<>();
-    private Repository<Emprestimo> emprestimos = new Repository<>();
+    private List<Usuario> usuarios;
+    private List<Livro> livros;
+    private List<Autor> autores;
+    private List<Emprestimo> emprestimos;
 
-
-    // Isso só diz onde cada arquivo JSON vai ficar.
-    private static final String ARQ_AUTORES = "dados/autores.json";
-    private static final String ARQ_USUARIOS = "dados/usuarios.json";
-    private static final String ARQ_LIVROS = "dados/livros.json";
-    private static final String ARQ_EMPRESTIMOS = "dados/emprestimos.json";
-
-    // construtor que carrega os dados
     public BibliotecaService() {
-        autores = ArquivoService.carregar(ARQ_AUTORES, Autor[].class);
-        usuarios = ArquivoService.carregar(ARQ_USUARIOS, Usuario[].class);
-        livros = ArquivoService.carregar(ARQ_LIVROS, Livro[].class);
-        emprestimos = ArquivoService.carregar(ARQ_EMPRESTIMOS, Emprestimo[].class);
+        autores = new ArrayList<>();
+        usuarios = new ArrayList<>();
+        livros = new ArrayList<>();
+        emprestimos = new ArrayList<>();
     }
 
-
-
     // =================== AUTORES ===================
-
     public Autor cadastrarAutor(String nome, String sobrenome, String nacionalidade) {
 
         for (Autor a : autores) {
@@ -44,12 +30,11 @@ public class BibliotecaService {
 
         Autor novo = new Autor(nome, sobrenome, nacionalidade);
         autores.add(novo);
-        ArquivoService.salvar(ARQ_AUTORES, autores);
         return novo;
     }
 
     public List<Autor> listarAutores() {
-        return autores.getAll();
+        return autores;
     }
 
     public Autor buscarAutorPorId(int idAutor) {
@@ -59,10 +44,7 @@ public class BibliotecaService {
         return null;
     }
 
-
-
     // =================== USUÁRIOS ===================
-
     public Usuario cadastrarUsuario(String nome, String id, String tipo) {
 
         if (buscarUsuarioPorId(id) != null) {
@@ -82,7 +64,6 @@ public class BibliotecaService {
         }
 
         usuarios.add(novo);
-        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
         return novo;
     }
 
@@ -94,13 +75,10 @@ public class BibliotecaService {
     }
 
     public List<Usuario> listarUsuarios() {
-        return usuarios.getAll();
+        return usuarios;
     }
 
-
-
     // =================== LIVROS ===================
-
     public Livro cadastrarLivro(String titulo, int idAutor, String isbn, String tipo) {
 
         Autor autor = buscarAutorPorId(idAutor);
@@ -123,12 +101,11 @@ public class BibliotecaService {
             novo = new LivroDigital(titulo, autor, isbn);
         }
         else {
-            System.out.println("Tipo inválido! Use 'fisico' ou 'digital'.");
+            System.out.println("Tipo inválido!");
             return null;
         }
 
         livros.add(novo);
-        ArquivoService.salvar(ARQ_LIVROS, livros);
         return novo;
     }
 
@@ -140,21 +117,19 @@ public class BibliotecaService {
     }
 
     public List<Livro> listarLivros() {
-        return livros.getAll();
+        return livros;
     }
-
-
 
     // =================== EMPRÉSTIMOS ===================
 
     public void realizarEmprestimo(Usuario u, Livro l) throws BibliotecaException {
 
         if (u.getMulta() > 0) {
-            throw new BibliotecaException("Usuário possui multa pendente e não pode realizar empréstimo.");
+            throw new BibliotecaException("Usuário possui multa pendente.");
         }
 
         if (!l.isDisponivel()) {
-            throw new BibliotecaException("Livro não está disponível para empréstimo.");
+            throw new BibliotecaException("Livro indisponível.");
         }
 
         Date hoje = new Date();
@@ -164,31 +139,18 @@ public class BibliotecaService {
         Date prevista = cal.getTime();
 
         Emprestimo e = new Emprestimo(l, u, hoje, prevista);
-
-        // Atualiza estado em memória primeiro
         emprestimos.add(e);
+
         u.adicionarEmprestimo(e);
         l.setDisponivel(false);
-
-        // Depois salva tudo no disco
-        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
-        ArquivoService.salvar(ARQ_LIVROS, livros);
-        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
     }
-
-
-
 
     public void registrarDevolucao(Usuario u, Livro l) {
 
         Emprestimo encontrado = null;
 
         for (Emprestimo e : emprestimos) {
-            boolean mesmoUsuario = e.getUsuario() == u;
-            boolean mesmoLivro = e.getLivro() == l;
-            boolean naoDevolvido = e.getDataDevolucao() == null;
-
-            if (mesmoUsuario && mesmoLivro && naoDevolvido) {
+            if (e.getUsuario() == u && e.getLivro() == l && e.getDataDevolucao() == null) {
                 encontrado = e;
                 break;
             }
@@ -203,41 +165,19 @@ public class BibliotecaService {
         if (multa > 0) u.adicionarMulta(multa);
 
         l.setDisponivel(true);
-
-        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
-        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
-        ArquivoService.salvar(ARQ_LIVROS, livros);
     }
-
-
 
     public List<Emprestimo> getEmprestimos() {
-        return emprestimos.getAll();
+        return emprestimos;
     }
 
-
-
-
-    public void adicionarEmprestimo(Emprestimo e) {
-        emprestimos.add(e);
-        e.getUsuario().adicionarEmprestimo(e);
-        e.getLivro().setDisponivel(false);
-    }
-
-    // adiciona este método na classe BibliotecaService
     public double quitarMultasUsuario(Usuario u) {
-        if (u == null) return 0.0;
-        double total = u.getMulta();  // soma das multas abertas
-        if (total > 0) {
-            u.pagarMulta(); // já implementado para quitar todas as Multa no Usuario
-            // salva alteração no arquivo
-            ArquivoService.salvar(ARQ_USUARIOS, usuarios);
-        }
+        double total = u.getMulta();
+        u.pagarMulta();
         return total;
     }
 
-
     public void listarPendencias() {
-        // Pode implementar depois
+        // opcional
     }
 }
