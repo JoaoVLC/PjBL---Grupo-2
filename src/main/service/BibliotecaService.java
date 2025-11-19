@@ -15,6 +15,22 @@ public class BibliotecaService {
     private Repository<Emprestimo> emprestimos = new Repository<>();
 
 
+    // Isso só diz onde cada arquivo JSON vai ficar.
+    private static final String ARQ_AUTORES = "dados/autores.json";
+    private static final String ARQ_USUARIOS = "dados/usuarios.json";
+    private static final String ARQ_LIVROS = "dados/livros.json";
+    private static final String ARQ_EMPRESTIMOS = "dados/emprestimos.json";
+
+    // construtor que carrega os dados
+    public BibliotecaService() {
+        autores = ArquivoService.carregar(ARQ_AUTORES, Autor[].class);
+        usuarios = ArquivoService.carregar(ARQ_USUARIOS, Usuario[].class);
+        livros = ArquivoService.carregar(ARQ_LIVROS, Livro[].class);
+        emprestimos = ArquivoService.carregar(ARQ_EMPRESTIMOS, Emprestimo[].class);
+    }
+
+
+
     // =================== AUTORES ===================
 
     public Autor cadastrarAutor(String nome, String sobrenome, String nacionalidade) {
@@ -28,6 +44,7 @@ public class BibliotecaService {
 
         Autor novo = new Autor(nome, sobrenome, nacionalidade);
         autores.add(novo);
+        ArquivoService.salvar(ARQ_AUTORES, autores);
         return novo;
     }
 
@@ -65,6 +82,7 @@ public class BibliotecaService {
         }
 
         usuarios.add(novo);
+        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
         return novo;
     }
 
@@ -110,6 +128,7 @@ public class BibliotecaService {
         }
 
         livros.add(novo);
+        ArquivoService.salvar(ARQ_LIVROS, livros);
         return novo;
     }
 
@@ -147,6 +166,11 @@ public class BibliotecaService {
 
         Emprestimo e = new Emprestimo(l, u, hoje, prevista);
         emprestimos.add(e);
+        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
+        ArquivoService.salvar(ARQ_LIVROS, livros); // livro ficou indisponível
+        ArquivoService.salvar(ARQ_USUARIOS, usuarios); // usuário ganhou empréstimo
+
+
 
         u.adicionarEmprestimo(e);
         l.setDisponivel(false);
@@ -178,6 +202,10 @@ public class BibliotecaService {
         if (multa > 0) u.adicionarMulta(multa);
 
         l.setDisponivel(true);
+
+        ArquivoService.salvar(ARQ_EMPRESTIMOS, emprestimos);
+        ArquivoService.salvar(ARQ_USUARIOS, usuarios);
+        ArquivoService.salvar(ARQ_LIVROS, livros);
     }
 
 
