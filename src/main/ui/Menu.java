@@ -25,6 +25,7 @@ public class Menu {
             System.out.println("3. Cadastrar Usuário");
             System.out.println("4. Realizar Empréstimo");
             System.out.println("5. Registrar Devolução");
+            System.out.println("6. Pagar Multas (quitar)");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -37,6 +38,7 @@ public class Menu {
                 case 3 -> cadastrarUsuario();
                 case 4 -> realizarEmprestimo();
                 case 5 -> registrarDevolucao();
+                case 6 -> pagarMultas();
                 case 0 -> System.out.println("Encerrando sistema...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -148,5 +150,18 @@ public class Menu {
 
         service.registrarDevolucao(usuario, livro);
         System.out.println("Devolução registrada. Multa atual do usuário: " + usuario.getMulta());
+    }
+
+    private void pagarMultas() {
+        System.out.print("Digite o ID do usuário: ");
+        String idUser = scanner.nextLine();
+        Usuario usuario = service.buscarUsuarioPorId(idUser);
+        if (usuario == null) {
+            System.out.println("Usuário não encontrado!");
+            return;
+        }
+
+        double total = service.quitarMultasUsuario(usuario);
+        System.out.println("Total quitado: R$ " + total);
     }
 }

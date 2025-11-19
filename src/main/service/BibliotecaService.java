@@ -79,6 +79,29 @@ public class BibliotecaService {
         livros.add(l);
     }
 
+    public Livro cadastrarLivro(String titulo, int idAutor, String isbn, String tipo) {
+        Autor a = buscarAutorPorId(idAutor);
+        if (a == null) {
+            System.out.println("Autor não encontrado com id: " + idAutor);
+            return null;
+        }
+        Livro l;
+        if (tipo.equalsIgnoreCase("fisico") || tipo.equalsIgnoreCase("f")) {
+            l = new LivroFisico(titulo, a, isbn);
+        } else {
+            l = new LivroDigital(titulo, a, isbn);
+        }
+        livros.add(l);
+        return l;
+    }
+
+    public Livro buscarLivroPorISBN(String isbn) {
+        for (Livro l : livros) {
+            if (l.getIsbn().equalsIgnoreCase(isbn)) return l;
+        }
+        return null;
+    }
+
     public List<Livro> listarLivros() {
         return livros;
     }
@@ -122,10 +145,26 @@ public class BibliotecaService {
 
         double multa = encontrado.calcularMulta();
         if (multa > 0) {
+            // criar registro de Multa e associar ao usuário
             u.adicionarMulta(multa);
         }
 
+        // tornar o livro disponível novamente
         l.setDisponivel(true);
+    }
+
+    /**
+     * Quita todas as multas pendentes do usuário e retorna o total quitado.
+     */
+    public double quitarMultasUsuario(Usuario u) {
+        double total = 0;
+        for (Multa m : u.getMultas()) {
+            if (!m.isPaga()) {
+                total += m.getValor();
+                m.quitarMulta();
+            }
+        }
+        return total;
     }
 
     public void adicionarEmprestimo(Emprestimo e) {
