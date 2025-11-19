@@ -8,14 +8,13 @@ public class Aluno extends Usuario {
         return 7; // 7 dias para alunos
     }
 
-    public Aluno() {
-        // construtor padrão
+    public Aluno(String nome, String id) {
+        super(nome, id);
+        this.matricula = "";
     }
 
     public Aluno(String nome, String id, String matricula) {
-        this.nome = nome;
-        this.id = id;
+        super(nome, id);
         this.matricula = matricula;
-        this.multa = 0;
     }
 }

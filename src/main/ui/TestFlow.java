@@ -11,15 +11,10 @@ public class TestFlow {
     public static void main(String[] args) throws Exception {
         BibliotecaService svc = new BibliotecaService();
 
-        // Criar autor, livro e aluno
-        Autor autor = new Autor("Joao", "Silva", "BR");
-        svc.cadastrarAutor(autor);
-
-        LivroFisico livro = new LivroFisico("Java 101", autor, "ISBN001");
-        svc.cadastrarLivro(livro);
-
-        Aluno aluno = new Aluno("Maria", "U1", "M123");
-        svc.cadastrarUsuario(aluno);
+    // Criar autor, livro e aluno via service
+    Autor autor = svc.cadastrarAutor("Joao", "Silva", "BR");
+    Livro livro = svc.cadastrarLivro("Java 101", autor.getId(), "ISBN001", "fisico");
+    Usuario aluno = svc.cadastrarUsuario("Maria", "U1", "aluno");
 
         System.out.println("Disponibilidade antes: " + livro.isDisponivel());
 
@@ -33,10 +28,8 @@ public class TestFlow {
         System.out.println("Multa do usuário (depois devolução imediata): " + aluno.getMulta());
 
         // Simular empréstimo atrasado criando um empréstimo com data prevista no passado
-        LivroFisico livro2 = new LivroFisico("Java Avançado", autor, "ISBN002");
-        svc.cadastrarLivro(livro2);
-        Aluno aluno2 = new Aluno("Carlos", "U2", "M124");
-        svc.cadastrarUsuario(aluno2);
+    Livro livro2 = svc.cadastrarLivro("Java Avançado", autor.getId(), "ISBN002", "fisico");
+    Usuario aluno2 = svc.cadastrarUsuario("Carlos", "U2", "aluno");
 
         // dataEmprestimo = 15 dias atrás
         Calendar cal = Calendar.getInstance();
