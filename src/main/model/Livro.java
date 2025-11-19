@@ -15,11 +15,28 @@ public abstract class Livro {
 
     public abstract boolean isDisponivel();
 
-    public String getTitulo() { return titulo; }
-    public Autor getAutor() { return autor; }
-    public String getIsbn() { return isbn; }
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public Autor getAutor() {
+        return autor;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public boolean getDisponivel() {
+        return disponivel;
+    }
 
     public void setDisponivel(boolean disponivel) {
         this.disponivel = disponivel;
+    }
+
+    @Override
+    public String toString() {
+        return titulo + " | ISBN: " + isbn + " | Autor: " + autor.getNomeCompleto();
     }
 }

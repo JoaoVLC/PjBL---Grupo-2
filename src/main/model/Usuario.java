@@ -15,8 +15,6 @@ public abstract class Usuario {
         this.multa = 0.0;
     }
 
-    public abstract int calcularPrazoDevolucao();
-
     public void adicionarEmprestimo(Emprestimo e) {
         emprestimos.add(e);
     }
@@ -25,7 +23,26 @@ public abstract class Usuario {
         multa = 0.0;
     }
 
-    public String getNome() { return nome; }
-    public String getId() { return id; }
-    public double getMulta() { return multa; }
+    public String getNome() {
+        return nome;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public double getMulta() {
+        return multa;
+    }
+
+    public void adicionarMulta(double valor) {
+        multa += valor;
+    }
+
+    public abstract int calcularPrazoDevolucao();
+
+    @Override
+    public String toString() {
+        return nome + " | ID: " + id + " | Multa: R$ " + multa;
+    }
 }
